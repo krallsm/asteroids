@@ -5,7 +5,7 @@ from asteroid import *
 from asteroidfield import *
 from shot import *
 
-def main():
+def game_loop():
     print("Starting asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
@@ -17,6 +17,7 @@ def main():
     
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
 
@@ -55,6 +56,10 @@ def main():
         clock.tick(60)
 
         dt = clock.tick(60) / 1000
+
+        
+def main():
+    game_loop()
         
     
 
