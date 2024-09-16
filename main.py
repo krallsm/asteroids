@@ -5,7 +5,7 @@ from asteroid import *
 from asteroidfield import *
 from shot import *
 
-def main_menu():
+def main_menu(screen):
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     while True:
@@ -27,7 +27,7 @@ def main_menu():
             play_text = play_font.render('Play Game', True, (255, 255, 255))
 
         if play_text_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
-            game_loop()
+            game_loop(screen)
         
         screen.blit(play_text, play_text_rect)
 
@@ -37,8 +37,56 @@ def main_menu():
             if event.type == pygame.QUIT:
                 return
 
-def ingame_menu():
-    pass
+def ingame_menu(screen):
+    paused = True
+
+    while paused:
+
+        font = pygame.font.Font(None, 74)
+        text = font.render('Paused', True, (255, 255, 255))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        screen.blit(text, text_rect)
+
+        resume_font = pygame.font.Font(None, 50)
+        resume_text = resume_font.render('Resume Game', True, (255, 255, 255))
+        resume_text_rect = resume_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 100))
+
+        mouse_pos = pygame.mouse.get_pos()
+
+        if resume_text_rect.collidepoint(mouse_pos):
+            resume_text = resume_font.render('Resume Game', True, (128, 128, 128))
+        else:
+            resume_text = resume_font.render('Resume Game', True, (255, 255, 255))
+
+        if resume_text_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+            paused = False
+        
+        screen.blit(resume_text, resume_text_rect)
+
+        quit_text = resume_font.render('Quit Game', True, (255, 255, 255))
+        quit_text_rect = quit_text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 200))
+
+        if quit_text_rect.collidepoint(mouse_pos):
+            quit_text = resume_font.render('Quit Game', True, (128, 128, 128))
+        else:
+            quit_text = resume_font.render('Quit Game', True, (255, 255, 255))
+
+        if quit_text_rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+            paused = False
+            main_menu(screen)
+
+        screen.blit(quit_text, quit_text_rect)
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE:
+                        paused = False
 
 def game_over():
     pass
@@ -51,11 +99,12 @@ def init():
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
     pygame.init()
+    
 
-def game_loop():
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+def game_loop(screen):
     clock = pygame.time.Clock()
     dt = 0
+    running = True
     
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -72,8 +121,13 @@ def game_loop():
     asteroid_field = AsteroidField()
  
     
-    while True:
+    while running:
         pygame.Surface.fill(screen, (0, 0, 0))
+
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_ESCAPE]:
+            ingame_menu(screen)
 
         for object in drawable:
             object.draw(screen)
@@ -82,6 +136,7 @@ def game_loop():
         
         for asteroid in asteroids:
             if player.collides_with(asteroid):
+                running = False
                 print("Game over!")
                 return
             for shot in shots:
@@ -101,8 +156,10 @@ def game_loop():
 
         
 def main():
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
     init()
-    main_menu()
+    main_menu(screen)
         
     
 
